@@ -56,12 +56,22 @@
     display:none;
   }
   .feedback.show{display:block;}
-  .feedback.good{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.35);}
-  .feedback.bad{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);}
+  .feedback.good{background:rgba(124,179,66,0.12);border:1px solid rgba(124,179,66,0.4);}
+  .feedback.bad{background:rgba(192,85,47,0.12);border:1px solid rgba(192,85,47,0.4);}
+  .feedback.peek{background:rgba(212,169,79,0.12);border:1px solid rgba(212,169,79,0.4);}
   .feedback .label{font-weight:700;margin-bottom:4px;display:block;}
   .feedback.good .label{color:var(--good);}
   .feedback.bad .label{color:var(--bad);}
+  .feedback.peek .label{color:var(--accent2);}
   .feedback .why{color:var(--muted);margin-top:6px;}
+  .show-ans-btn{
+    margin-top:10px;background:transparent;color:var(--accent2);
+    border:1px solid var(--accent2);padding:7px 14px;border-radius:999px;
+    font-size:0.8rem;font-weight:600;cursor:pointer;box-shadow:none;
+  }
+  .show-ans-btn:hover{background:rgba(212,169,79,0.1);}
+  .show-ans-btn:disabled{opacity:0.5;cursor:default;}
+  .navbtn{padding:8px 16px;font-size:0.8rem;margin-left:0;}
   footer{text-align:center;margin-top:24px;}
   button{
     background:linear-gradient(90deg,var(--accent),var(--accent2));color:#1b2a1a;border:none;
@@ -86,8 +96,8 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Environmental Studies — Module 1</h1>
-    <div class="sub">Ecosystem &amp; Biodiversity · All 92 Questions · +1 correct / −0.25 wrong · instant feedback</div>
+    <h1>🌿 Environmental Studies — Module 1</h1>
+    <div class="sub">Ecosystem &amp; Biodiversity · All 92 Questions · +1 for a healthy answer, −0.25 for a wilted one · instant feedback</div>
   </header>
 
   <div id="score-bar">
@@ -95,6 +105,7 @@
     <div class="stat">Correct: <b id="correct-count" style="color:var(--good)">0</b></div>
     <div class="stat">Wrong: <b id="wrong-count" style="color:var(--bad)">0</b></div>
     <div class="stat">Score: <b id="live-score">0.00</b> / 92</div>
+    <button id="show-all-btn" class="secondary navbtn">🌻 Show All Answers</button>
   </div>
 
   <div id="result-panel">
@@ -106,8 +117,8 @@
   <div id="quiz-container"></div>
 
   <footer>
-    <button id="submit-btn">Finish &amp; Show Summary</button>
-    <button id="retry-btn" class="secondary" style="display:none;">Retry Quiz</button>
+    <button id="submit-btn">🌾 Finish &amp; Show Summary</button>
+    <button id="retry-btn" class="secondary" style="display:none;">🔄 Retry Quiz</button>
   </footer>
 </div>
 
@@ -523,6 +534,13 @@ function render(){
     });
     card.appendChild(optsWrap);
 
+    const showBtn = document.createElement('button');
+    showBtn.className='show-ans-btn';
+    showBtn.id='show-btn-'+qi;
+    showBtn.textContent='🌻 Show Answer';
+    showBtn.addEventListener('click',()=>{ revealAnswer(qi); });
+    card.appendChild(showBtn);
+
     const fb = document.createElement('div');
     fb.className='feedback';
     fb.id='fb-'+qi;
@@ -531,6 +549,29 @@ function render(){
     container.appendChild(card);
   });
   updateCounts();
+}
+
+// Peek at the answer without picking (no scoring, just reveals it)
+function revealAnswer(qi){
+  if(state[qi].picked!==null) return; // already answered properly, nothing to reveal
+  const item = QUESTIONS[qi];
+  const card = document.getElementById('card-'+qi);
+  const fb = document.getElementById('fb-'+qi);
+  const btn = document.getElementById('show-btn-'+qi);
+
+  card.querySelectorAll('input').forEach(r=>r.disabled=true);
+  card.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
+  document.getElementById('opt-'+qi+'-'+item.correct).classList.add('opt-correct');
+
+  btn.disabled = true;
+  btn.textContent = '🌻 Answer revealed';
+
+  fb.className='feedback peek show';
+  fb.innerHTML = '<span class="label">🔎 Answer: '+String.fromCharCode(97+item.correct)+') '+item.opts[item.correct]+'</span>'+
+    '<div class="why">'+item.solution+'</div>';
+
+  state[qi].revealed = true;
+  // revealed questions count as "seen" but are not scored as correct/wrong
 }
 
 // INSTANT grading the moment an option is picked
@@ -544,17 +585,19 @@ function answerQuestion(qi,oi){
   card.querySelectorAll('input').forEach(r=>r.disabled=true);
   card.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
   document.getElementById('opt-'+qi+'-'+item.correct).classList.add('opt-correct');
+  const sb = document.getElementById('show-btn-'+qi);
+  if(sb){ sb.disabled=true; sb.style.display='none'; }
 
   if(oi===item.correct){
     card.classList.add('correct');
     fb.className='feedback good show';
-    fb.innerHTML = '<span class="label">✓ Correct (+1)</span><div class="why">'+item.solution+'</div>';
+    fb.innerHTML = '<span class="label">🌱 Correct (+1)</span><div class="why">'+item.solution+'</div>';
   } else {
     card.classList.add('incorrect');
     document.getElementById('opt-'+qi+'-'+oi).classList.add('opt-wrong-picked');
     fb.className='feedback bad show';
     const whyWrong = item.wrong[oi] || "This option does not correctly match the concept being tested.";
-    fb.innerHTML = '<span class="label">✗ Incorrect (−0.25)</span>'+
+    fb.innerHTML = '<span class="label">🍂 Incorrect (−0.25)</span>'+
       '<div><b>Why your answer is wrong:</b> '+whyWrong+'</div>'+
       '<div class="why"><b>Solution:</b> '+item.solution+'</div>';
   }
@@ -599,11 +642,17 @@ function finishQuiz(){
 }
 
 document.getElementById('submit-btn').addEventListener('click', finishQuiz);
+document.getElementById('show-all-btn').addEventListener('click', ()=>{
+  QUESTIONS.forEach((item,qi)=>{
+    if(state[qi].picked===null) revealAnswer(qi);
+  });
+});
 document.getElementById('retry-btn').addEventListener('click', ()=>{
-  state.forEach(s=>{s.picked=null;});
+  state.forEach(s=>{s.picked=null;s.revealed=false;});
   document.getElementById('result-panel').classList.remove('show');
   document.getElementById('submit-btn').style.display='inline-block';
   document.getElementById('retry-btn').style.display='none';
+  document.getElementById('show-all-btn').style.display='inline-block';
   render();
   window.scrollTo({top:0,behavior:'smooth'});
 });
