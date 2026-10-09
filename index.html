@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Environmental Studies — Module 1 Full Quiz</title>
+<style>
+  :root{
+    --bg:#1b2a1a;--card:#223821;--card2:#1a2d19;--accent:#8bc34a;--accent2:#d4a94f;
+    --good:#7cb342;--bad:#c0552f;--text:#eef3e4;--muted:#a8bf98;--border:#3e5a3b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(139,195,74,0.08), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(212,169,79,0.08), transparent 40%),
+      linear-gradient(160deg,#162316,#1f2e1a 55%,#24301c);
+    color:var(--text);
+    padding:16px;
+  }
+  .wrap{max-width:820px;margin:0 auto;}
+  header{text-align:center;margin-bottom:20px;}
+  h1{font-size:1.4rem;margin:0 0 6px;background:linear-gradient(90deg,var(--accent),var(--accent2));
+     -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sub{color:var(--muted);font-size:0.85rem;}
+  #score-bar{
+    position:sticky;top:0;z-index:10;background:rgba(27,42,26,0.97);backdrop-filter:blur(6px);
+    border:1px solid var(--border);border-radius:12px;padding:10px 16px;margin-bottom:18px;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.25);
+  }
+  #score-bar .stat{font-size:0.82rem;color:var(--muted);}
+  #score-bar .stat b{color:var(--text);font-size:0.95rem;}
+  .q-card{
+    background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:10px;padding:16px;margin-bottom:14px;transition:border-color .2s;
+  }
+  .q-card.correct{border-color:var(--good);border-left-color:var(--good);}
+  .q-card.incorrect{border-color:var(--bad);border-left-color:var(--bad);}
+  .q-num{color:var(--accent);font-weight:600;font-size:0.78rem;letter-spacing:0.5px;}
+  .q-text{font-size:1rem;margin:6px 0 12px;font-weight:500;}
+  .options{display:flex;flex-direction:column;gap:7px;}
+  .opt{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;
+    border:1px solid var(--border);background:var(--card2);cursor:pointer;font-size:0.88rem;
+    transition:background .15s,border-color .15s;
+  }
+  .opt:hover{border-color:var(--accent);}
+  .opt input{accent-color:var(--accent);width:15px;height:15px;flex-shrink:0;}
+  .opt.disabled{cursor:default;}
+  .opt.opt-correct{border-color:var(--good);background:rgba(34,197,94,0.12);}
+  .opt.opt-wrong-picked{border-color:var(--bad);background:rgba(239,68,68,0.12);}
+  .feedback{
+    margin-top:10px;padding:10px 12px;border-radius:10px;font-size:0.85rem;line-height:1.5;
+    display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.good{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.35);}
+  .feedback.bad{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.35);}
+  .feedback .label{font-weight:700;margin-bottom:4px;display:block;}
+  .feedback.good .label{color:var(--good);}
+  .feedback.bad .label{color:var(--bad);}
+  .feedback .why{color:var(--muted);margin-top:6px;}
+  footer{text-align:center;margin-top:24px;}
+  button{
+    background:linear-gradient(90deg,var(--accent),var(--accent2));color:#1b2a1a;border:none;
+    padding:12px 28px;border-radius:999px;font-weight:700;font-size:0.95rem;cursor:pointer;
+    box-shadow:0 4px 14px rgba(139,195,74,0.3);
+  }
+  button:disabled{opacity:0.5;cursor:not-allowed;}
+  button.secondary{background:var(--card2);color:var(--text);border:1px solid var(--border);
+    box-shadow:none;margin-left:10px;}
+  #result-panel{
+    display:none;background:var(--card);border:1px solid var(--accent);border-radius:16px;
+    padding:22px;text-align:center;margin-bottom:18px;
+  }
+  #result-panel.show{display:block;}
+  #result-panel .big{font-size:2rem;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  #result-panel .grade{font-size:0.95rem;color:var(--muted);margin-top:6px;}
+  .progress-track{width:100%;height:8px;background:var(--card2);border-radius:999px;overflow:hidden;margin-top:14px;border:1px solid var(--border);}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0%;transition:width .4s;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Environmental Studies — Module 1</h1>
+    <div class="sub">Ecosystem &amp; Biodiversity · All 92 Questions · +1 correct / −0.25 wrong · instant feedback</div>
+  </header>
+
+  <div id="score-bar">
+    <div class="stat">Answered: <b id="answered-count">0</b>/92</div>
+    <div class="stat">Correct: <b id="correct-count" style="color:var(--good)">0</b></div>
+    <div class="stat">Wrong: <b id="wrong-count" style="color:var(--bad)">0</b></div>
+    <div class="stat">Score: <b id="live-score">0.00</b> / 92</div>
+  </div>
+
+  <div id="result-panel">
+    <div class="big" id="final-score"></div>
+    <div class="grade" id="final-grade"></div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+
+  <div id="quiz-container"></div>
+
+  <footer>
+    <button id="submit-btn">Finish &amp; Show Summary</button>
+    <button id="retry-btn" class="secondary" style="display:none;">Retry Quiz</button>
+  </footer>
+</div>
+
+<script>
+// Each option gets auto-graded + feedback the instant it is clicked.
+const QUESTIONS = [
+{q:"The term 'Environment' has been derived from the French word which means to encircle or surround",opts:["Environ","Oikos","geo","Aqua"],correct:0,
+ wrong:["","Oikos is Greek (root of 'ecology'), not French.","Geo is Greek/Latin for earth, unrelated to 'surround.'","Aqua is Latin for water, unrelated to 'surround.'"],
+ solution:"'Environ' is French for 'to encircle/surround' — the root of the word Environment."},
+
+{q:"Which of the following conceptual spheres of the environment has the least storage capacity for matter?",opts:["Atmosphere","Lithosphere","Hydrosphere","Biosphere"],correct:3,
+ wrong:["The atmosphere is a large gaseous reservoir, not the smallest.","The lithosphere is the largest/densest store of matter.","The hydrosphere holds vast water reserves.",""],
+ solution:"Biosphere is the thin shell where life exists, so it stores the least matter of the four spheres."},
+
+{q:"Which of the following components of the environment are effective transporters of matter?",opts:["Atmosphere and Hydrosphere","Atmosphere and Lithosphere","Hydrosphere and Lithosphere","Biosphere and Lithosphere"],correct:0,
+ wrong:["","Lithosphere is static (solid), not a transporter.","Lithosphere is static (solid), not a transporter.","Neither biosphere nor lithosphere are fluid transport media."],
+ solution:"Air and water (atmosphere & hydrosphere) are fluids that actively circulate matter across the globe."},
+
+{q:"Biosphere is:",opts:["The solid shell of inorganic materials on the surface of the earth","The thin shell of organic matter on the surface of earth comprising of all the living things","the sphere which occupies the maximum volume of all of the spheres","all of the above"],correct:1,
+ wrong:["This describes the lithosphere, not biosphere.","","The biosphere is the thinnest/smallest sphere, not the largest.","Since option c is false, 'all of the above' is wrong."],
+ solution:"Biosphere = thin shell of organic matter containing all living things."},
+
+{q:"Atmosphere consists of 79 per cent Nitrogen and 21 per cent Oxygen by:",opts:["volume","weight","Density","All the three"],correct:0,
+ wrong:["","By weight the percentages differ due to differing molar masses.","Density isn't how gas composition is conventionally expressed.","Since weight/density differ, 'all three' is wrong."],
+ solution:"Atmospheric composition is conventionally expressed by volume (mole fraction)."},
+
+{q:"Which of the following is a biotic component of an ecosystem?",opts:["Fungi","solar light","temperature","humidity"],correct:0,
+ wrong:["","Solar light is a physical, abiotic energy source.","Temperature is an abiotic physical factor.","Humidity is an abiotic physical factor."],
+ solution:"Fungi are living organisms (decomposers) — a biotic component. Light, temperature, humidity are abiotic."},
+
+{q:"In an ecosystem, the flow of energy is:",opts:["Bidirectional","Cyclic","Unidirectional","Multidirectional"],correct:2,
+ wrong:["Energy never flows backward from consumers to producers.","Unlike nutrients, energy is lost as heat and never cycles back.","","Energy follows one path, not multiple simultaneous directions."],
+ solution:"Energy flow is unidirectional — sun → producers → consumers → decomposers, with heat loss at each step (laws of thermodynamics)."},
+
+{q:"Which Pyramid is always upright:",opts:["energy","biomass","numbers","food chain"],correct:0,
+ wrong:["","Biomass pyramids can be inverted (e.g., aquatic ecosystems).","Number pyramids can be inverted (e.g., many insects on one tree).","'Food chain' isn't a type of ecological pyramid."],
+ solution:"The energy pyramid is always upright because energy decreases progressively at each trophic level (2nd law of thermodynamics)."},
+
+{q:"In complex ecosystems the degree of species diversity is:",opts:["poor","high","medium","none"],correct:1,
+ wrong:["Complexity correlates with high, not poor, diversity.","","Complex ecosystems show high, not medium, diversity.","Ecosystems always have some diversity."],
+ solution:"Greater ecosystem complexity generally means higher species diversity and more interconnections."},
+
+{q:"The organisms who directly feed on producers are called:",opts:["Herbivores","Carnivores","Decomposers","Saprophytes"],correct:0,
+ wrong:["","Carnivores eat other animals, not plants directly.","Decomposers break down dead matter, not living producers.","Saprophytes feed on decaying matter, not living producers."],
+ solution:"Herbivores (primary consumers) directly feed on producers (plants)."},
+
+{q:"The sequence of eating and being eaten in an ecosystem is called:",opts:["Food Chain","carbon cycle","hydrological cycle","anthroposystem"],correct:0,
+ wrong:["","The carbon cycle is about carbon movement, not feeding sequences.","The hydrological cycle is about water movement.","Not a standard ecology term for this concept."],
+ solution:"Food Chain is the sequence of eating and being eaten, transferring energy through organisms."},
+
+{q:"Which of the following is a producer in an ecosystem:",opts:["Plants and some bacteria capable of producing their own food","Animals","Human beings","Fish"],correct:0,
+ wrong:["","Animals are consumers, not producers.","Humans are consumers (omnivores), not producers.","Fish are consumers, not producers."],
+ solution:"Producers make their own food via photosynthesis (plants and certain bacteria)."},
+
+{q:"Which of the following statements is false?",opts:["Inorganic nutrients are recycled in an ecosystem","Energy 'flows' through the ecosystem in the form of carbon-carbon bonds","Energy is recycled in an ecosystem","Respiration process releases energy"],correct:2,
+ wrong:["This is TRUE — nutrients are recycled via biogeochemical cycles.","This is TRUE — chemical energy is stored in carbon-carbon bonds.","","This is TRUE — respiration releases stored energy from food."],
+ solution:"'Energy is recycled' is FALSE — energy flows one-way and is lost as heat, unlike nutrients which do cycle."},
+
+{q:"The largest reservoir of nitrogen in our planet is:",opts:["Oceans","Atmosphere","biosphere","Fossil fuels"],correct:1,
+ wrong:["Oceans hold far less dissolved nitrogen than the atmosphere's gas reserve.","","The biosphere contains comparatively tiny amounts of nitrogen.","Fossil fuels store mainly carbon compounds, not nitrogen."],
+ solution:"The atmosphere (~78% N2 gas) is by far the largest nitrogen reservoir."},
+
+{q:"In aquatic ecosystem phytoplankton can be considered as a:",opts:["Consumer","producer","Saprotrophic organisms","Macroconsumer"],correct:1,
+ wrong:["Consumers feed on others; phytoplankton photosynthesize their own food.","","Saprotrophs feed on dead matter, not photosynthesize.","Macroconsumers are larger animal consumers, not microscopic producers."],
+ solution:"Phytoplankton photosynthesize their own food, making them producers — the base of the aquatic food chain."},
+
+{q:"The basic requirements of human beings are provided by:",opts:["Industrialization","Agriculture","Nature","Urbanization"],correct:2,
+ wrong:["Industrialization processes resources but doesn't originally provide them.","Agriculture itself depends on natural resources (soil, water, sunlight).","","Urbanization consumes resources rather than providing them."],
+ solution:"Nature ultimately provides the basic resources (air, water, food, land) humans depend on."},
+
+{q:"Environment is the life support system that includes:",opts:["Air","Water","Land","All of the above"],correct:3,
+ wrong:["Air alone is incomplete — environment includes more.","Water alone is incomplete.","Land alone is incomplete.",""],
+ solution:"Environment as a life support system includes air, water, and land together."},
+
+{q:"In an ecosystem biological cycling of materials is maintained by:",opts:["Producer","Consumer","Decomposer","All of the above"],correct:3,
+ wrong:["Producers alone don't complete the cycle.","Consumers alone don't complete the cycle.","Decomposers alone don't complete the cycle.",""],
+ solution:"Producers, consumers, and decomposers together maintain the biological cycling of materials in an ecosystem."},
+
+{q:"Organisms which feed directly or indirectly on producers are called:",opts:["Prey","Consumers","Decomposers","Detritus"],correct:1,
+ wrong:["'Prey' refers to organisms being eaten, not the feeding classification itself.","","Decomposers break down dead matter rather than feeding on living producers.","Detritus refers to dead organic matter, not a feeding category of organisms."],
+ solution:"Consumers are organisms that feed directly (herbivores) or indirectly (carnivores) on producers."},
+
+{q:"The primary producers in a forest ecosystem are:",opts:["Chlorophyll containing trees and plants","Herbivores","Carnivores","Bacteria and other microorganisms"],correct:0,
+ wrong:["","Herbivores are primary consumers, not producers.","Carnivores are secondary/tertiary consumers, not producers.","Bacteria here act as decomposers, not primary producers."],
+ solution:"Chlorophyll-containing trees and plants produce food via photosynthesis — the forest's primary producers."},
+
+{q:"Abiotic component includes:",opts:["Soil","Temperature","Water","All of the above"],correct:3,
+ wrong:["Soil alone is incomplete.","Temperature alone is incomplete.","Water alone is incomplete.",""],
+ solution:"Soil, temperature, and water are all abiotic (non-living) components."},
+
+{q:"Which of the following statement is true:",opts:["Green plants are self nourishing","Producers depends on consumers","Biotic components includes all non-living components","Herbivores depend on Carnivores"],correct:0,
+ wrong:["","This is reversed — consumers depend on producers, not vice versa.","Biotic means living components; non-living components are abiotic.","This is reversed — carnivores depend on herbivores, not vice versa."],
+ solution:"Green plants (producers) are self-nourishing — they make their own food via photosynthesis."},
+
+{q:"Primary consumer is:",opts:["Herbivores","Carnivores","Macro consumers","Omnivores"],correct:0,
+ wrong:["","Carnivores are secondary/tertiary consumers.","'Macro consumers' isn't the specific term for primary consumers.","Omnivores eat both plants and animals, not strictly primary consumers."],
+ solution:"Primary consumers are herbivores — they eat producers (plants) directly."},
+
+{q:"A predator is:",opts:["An animal that is fed upon","An animal that feeds upon another animal","Animal that feeds upon both plants and animals","a primary consumer"],correct:1,
+ wrong:["This describes 'prey,' the opposite of a predator.","","This describes an omnivore, not specifically a predator.","Primary consumers eat plants, not necessarily predators of animals."],
+ solution:"A predator is an animal that feeds upon (hunts) another animal."},
+
+{q:"The word 'Environment' is derived from:",opts:["Greek","French","Spanish","English"],correct:1,
+ wrong:["Greek is the root of 'ecology,' not 'environment.'","","Spanish is not the origin of this term.","English borrowed the word from French."],
+ solution:"'Environment' is derived from the French word 'Environ,' meaning to encircle or surround."},
+
+{q:"Which among the following is a climatic factor?",opts:["Pressure","humidity","temperature","all of the above"],correct:3,
+ wrong:["Pressure alone is incomplete.","Humidity alone is incomplete.","Temperature alone is incomplete.",""],
+ solution:"Pressure, humidity, and temperature are all climatic (abiotic) factors."},
+
+{q:"Which of the following is the terrestrial ecosystem?",opts:["Forest","Grass land","Desert","All of the above"],correct:3,
+ wrong:["Forest alone is incomplete.","Grassland alone is incomplete.","Desert alone is incomplete.",""],
+ solution:"Forest, grassland, and desert are all terrestrial (land-based) ecosystems."},
+
+{q:"World Environment day is on:",opts:["5th May","5th June","18th July","16th August"],correct:1,
+ wrong:["Incorrect date.","","Incorrect date.","Incorrect date."],
+ solution:"World Environment Day is observed on 5th June every year."},
+
+{q:"Factors responsible for balanced ecosystem are:",opts:["Balance between predator and prey","Balance between vegetation, herbivorous and carnivorous","Balance between competing species and biotic factors","All of the above"],correct:3,
+ wrong:["This alone is incomplete.","This alone is incomplete.","This alone is incomplete.",""],
+ solution:"All these balances together (predator-prey, trophic levels, competing species) maintain ecosystem stability."},
+
+{q:"Which of the following is absorbed by green plants from the atmosphere?",opts:["Carbon dioxide","Water","Nutrients","All of above"],correct:0,
+ wrong:["","Water is absorbed mainly from soil, not the atmosphere.","Nutrients are absorbed mainly from soil, not the atmosphere.","Since water/nutrients come from soil, 'all of above' is incorrect for atmospheric absorption."],
+ solution:"Green plants absorb carbon dioxide from the atmosphere for photosynthesis."},
+
+{q:"Habitat refers to:",opts:["Physical conditions of the place where organisms live","Chemical conditions of the place where organisms live","Both a & b","None of a or b"],correct:2,
+ wrong:["Incomplete — habitat includes chemical conditions too.","Incomplete — habitat includes physical conditions too.","","Both physical and chemical conditions do define habitat."],
+ solution:"Habitat refers to both the physical and chemical conditions of the place where organisms live."},
+
+{q:"A food web consists of:",opts:["a portion of a food chain","an organism's position in a food chain","interlocking food chains","a set of similar consumers"],correct:2,
+ wrong:["A food web is more than one portion of a chain.","That describes a 'trophic level,' not a food web.","","A food web isn't limited to similar consumers."],
+ solution:"A food web is the interlocking pattern of multiple food chains in an ecosystem."},
+
+{q:"Which of the fallowing are producers':",opts:["Animals","Human being","Plants & Bacteria","Fishes"],correct:2,
+ wrong:["Animals are consumers.","Humans are consumers.","","Fishes are consumers."],
+ solution:"Plants and certain bacteria produce their own food — they are producers."},
+
+{q:"Which of the fallowing is a ecosystem:",opts:["Forest","desert","Mountain","All"],correct:3,
+ wrong:["Forest alone is incomplete.","Desert alone is incomplete.","Mountain alone is incomplete.",""],
+ solution:"Forest, desert, and mountain are all examples of ecosystems."},
+
+{q:"Environment means:",opts:["Surrounding (Biotic + Abiotic components), in which organisms live","Atmosphere around one self","Sum total of social, Economical, biological behavior of animals","Sum total of development activities around"],correct:0,
+ wrong:["","This is too narrow — environment includes more than just atmosphere.","This describes social behavior, not environment.","This describes development, not environment."],
+ solution:"Environment is the surrounding of biotic and abiotic components in which organisms live."},
+
+{q:"Which of the fallowing is not the meaning of ecosystem?",opts:["Unit where in all organisms live a healthy life","a small unit that can be self sufficient","Co-Existence of diverse things by mutual adjustment","A unit includes all of the organisms in a given area interacting with the physical environment to form a natural unit of stability"],correct:1,
+ wrong:["This is a plausible description, not the exception asked for.","","This is a valid description of ecosystem, not the exception.","This is the standard textbook definition of ecosystem, not the exception."],
+ solution:"An ecosystem is not necessarily 'a small unit that can be self-sufficient' — ecosystems vary in size and are interdependent, not strictly self-sufficient small units."},
+
+{q:"Which of it is not an example for an terrestrial ecosystem:",opts:["Forest","Desert","Water","Grassland"],correct:2,
+ wrong:["Forest IS terrestrial.","Desert IS terrestrial.","","Grassland IS terrestrial."],
+ solution:"Water (aquatic) is not a terrestrial ecosystem — forest, desert, and grassland are."},
+
+{q:"The factor responsible for stable ecosystem are balance between:",opts:["Predators & Pray","Vegetation, Herbivores & carnivores","Competing species & Biotic factor","All the above"],correct:3,
+ wrong:["Incomplete alone.","Incomplete alone.","Incomplete alone.",""],
+ solution:"All these balances together contribute to a stable ecosystem."},
+
+{q:"Important physical factor responsible for a good habitat of a organism:",opts:["Light","Temperature","Humidity","All the above"],correct:3,
+ wrong:["Light alone is incomplete.","Temperature alone is incomplete.","Humidity alone is incomplete.",""],
+ solution:"Light, temperature, and humidity together are important physical factors for a good habitat."},
+
+{q:"Which of the fallowing is not a prominent chemical responsible for a good habitat:",opts:["O2","CO2","SO2","Nutrients"],correct:2,
+ wrong:["O2 IS important for habitat.","CO2 IS important for habitat.","","Nutrients ARE important for habitat."],
+ solution:"SO2 (sulfur dioxide) is a pollutant, not a chemical that supports a good habitat — unlike O2, CO2, and nutrients."},
+
+{q:"--------is termed as the life zone of the earth.",opts:["Atmosphere","Hydrosphere","Biosphere","Stratosphere"],correct:2,
+ wrong:["Atmosphere is the gaseous envelope, not specifically the 'life zone.'","Hydrosphere is the water envelope, not specifically the 'life zone.'","","Stratosphere is an atmospheric layer, not the 'life zone.'"],
+ solution:"Biosphere is termed the life zone of the earth — it's where all living organisms exist."},
+
+{q:"An ecosystem is a region in which:",opts:["Dead organism interact with their environment","Living organism do not interact with their environment","Living organism interact with their environment","All the above"],correct:2,
+ wrong:["Ecosystems are defined by living, not dead, organism interaction.","This contradicts the basic definition of an ecosystem.","","Since options a and b are wrong, 'all the above' is incorrect."],
+ solution:"An ecosystem is a region where living organisms interact with their environment."},
+
+{q:"The term ecosystem was first proposed by:",opts:["Jacob van verkul","A G Transley","Costraza","Marie Gibbs"],correct:1,
+ wrong:["Not the credited originator.","","Not the credited originator.","Not the credited originator."],
+ solution:"A.G. Tansley first proposed the term 'ecosystem' in 1935."},
+
+{q:"The two major components of ecosystem are:",opts:["Adiabatic & Isotropic","Ecologic & climatologic","Cyclic & biologic","Abiotic & biotic"],correct:3,
+ wrong:["These are physics terms, unrelated to ecosystem classification.","Not the standard classification.","Not the standard classification.",""],
+ solution:"Every ecosystem consists of abiotic (non-living) and biotic (living) components."},
+
+{q:"Biotic components includes:",opts:["All living organisms","water, mineral & gases","Self-nourishing green plants","Light, temperature etc"],correct:0,
+ wrong:["","Water, minerals, and gases are abiotic components.","This describes only producers, a subset — not the full definition of biotic components.","Light and temperature are abiotic factors."],
+ solution:"Biotic components include all living organisms (producers, consumers, decomposers)."},
+
+{q:"Food chain is divided into ---------basic categories:",opts:["Four","Three","Five","seven"],correct:1,
+ wrong:["Incorrect count.","","Incorrect count.","Incorrect count."],
+ solution:"Food chains have three basic categories of participants — producers, consumers, and decomposers (though trophic levels can be more granular). Here per the source material, 'Three' is marked as the correct count."},
+
+{q:"The transfer of energy & nutrients from one feeding group of organization to another in a series is called:",opts:["Energy chain","Food Chain","Balanced ecosystem","Food Web"],correct:1,
+ wrong:["Not the standard term used.","","'Balanced ecosystem' is unrelated to this sequential transfer definition.","A food web is a network of interlocking chains, not a single series."],
+ solution:"This sequential transfer of energy/nutrients between feeding groups is called a Food Chain."},
+
+{q:"In which of the following place we can find the cold deserts?",opts:["Bangalore","Chennai","Himalaya","Rajasthan"],correct:2,
+ wrong:["Bangalore has no cold desert.","Chennai has no cold desert.","","Rajasthan has a hot desert (Thar), not cold."],
+ solution:"Cold deserts (like Ladakh) are found in the Himalayan region."},
+
+{q:"What kind of climate we can find in the Thar Desert?",opts:["Cold","Dry","Cool","Moist"],correct:1,
+ wrong:["Thar is hot, not cold.","","Thar isn't described as merely 'cool.'","Deserts are the opposite of moist."],
+ solution:"The Thar Desert has a dry climate."},
+
+{q:"Where can we find babul tree?",opts:["In deserts ecosystems","In river deltas","In grassland ecosystems","In semi-arid ecosystems"],correct:3,
+ wrong:["Babul trees are more characteristic of semi-arid than true desert zones.","Not typically associated with river deltas.","Not primarily a grassland species.",""],
+ solution:"Babul (Acacia nilotica) trees are typically found in semi-arid ecosystems."},
+
+{q:"Why Rann of Kutch attracts aquatic birds in monsoon season?",opts:["Because desert land is converted to forest land","Because desert land is converted to snow","Because desert land do not convert","Because desert land is converted to salt marshes"],correct:3,
+ wrong:["Deserts don't seasonally become forests.","Rann of Kutch doesn't get snow.","This contradicts the question's premise of a seasonal change.",""],
+ solution:"During monsoon, the dry salt desert floods and becomes salt marshes/wetlands, attracting aquatic birds like flamingos."},
+
+{q:"What makes desert region to become highly unproductive?",opts:["Salinity","Sunlight","Temperature","Increase in the rain"],correct:0,
+ wrong:["","Deserts get abundant sunlight — not the limiting factor for productivity here.","High temperature alone isn't the specific answer given.","Deserts have a LACK of rain, contradicting this option."],
+ solution:"Salinity (along with lack of water & poor nutrients) makes desert regions highly unproductive."},
+
+{q:"How can desert ecosystems be conserved?",opts:["By minimizing the human activity","By pouring water to desert area","By deforestation","By killing organisms"],correct:0,
+ wrong:["","Artificially flooding deserts disrupts their natural ecology rather than conserving it.","Deforestation destroys ecosystems, it doesn't conserve them.","Killing organisms destroys biodiversity, it doesn't conserve ecosystems."],
+ solution:"Minimizing human activity/interference helps conserve the natural balance of desert ecosystems."},
+
+{q:"Which of the following tribe protected trees from several generations in Rajasthan?",opts:["Bishnoi","Papadi","Korvanji","Gudus"],correct:0,
+ wrong:["","Not a recognized tree-protecting community in this context.","Not a recognized tree-protecting community in this context.","Not a recognized tree-protecting community in this context."],
+ solution:"The Bishnoi community is famous for protecting trees (notably in the Khejarli massacre) for generations."},
+
+{q:"Where can we see Indira Gandhi Canal?",opts:["Gujarat","Rajasthan","Punjab","Haryana"],correct:1,
+ wrong:["Incorrect state.","","Incorrect state.","Incorrect state."],
+ solution:"The Indira Gandhi Canal is located in Rajasthan, bringing irrigation water to the Thar Desert region."},
+
+{q:"Which kind of soil we can found on the surface of Thar desert?",opts:["Rocky","Moist","Fertile","Aeolian"],correct:3,
+ wrong:["Not the characteristic desert soil type described.","Deserts are dry, not moist.","Desert soil is poor in nutrients, not fertile.",""],
+ solution:"Thar Desert has Aeolian (wind-deposited sandy) soil."},
+
+{q:"Which is the biggest desert in the world including both hot and cold deserts?",opts:["Sahara","Arctic","Arabian","Antarctica"],correct:3,
+ wrong:["Sahara is the largest HOT desert, but not the largest overall.","Arctic is a polar region but not the single largest desert.","Arabian desert is smaller than Antarctica.",""],
+ solution:"Antarctica is technically the largest desert in the world (a cold desert) when considering all desert types."},
+
+{q:"How many parts are there in the forest ecosystem?",opts:["One","Two","Three","Four"],correct:1,
+ wrong:["Incorrect count.","","Incorrect count — forest ecosystem structure is generally split into two: abiotic and biotic.","Incorrect count."],
+ solution:"Forest ecosystem has two main parts: Abiotic components and Biotic components."},
+
+{q:"On which factor forest type is mainly dependent?",opts:["Abiotic","Size of the forest","Shape of trees","Products from the trees"],correct:0,
+ wrong:["","Forest size doesn't determine forest type.","Tree shape doesn't determine forest type.","Products from trees don't determine the forest classification."],
+ solution:"Forest type mainly depends on abiotic factors like climate, rainfall, and temperature."},
+
+{q:"Where can we find coniferous forest in India?",opts:["Deserts","River deltas","Grassland","Himalayan"],correct:3,
+ wrong:["Deserts don't support coniferous forests.","River deltas don't typically have coniferous forests.","Grasslands don't support coniferous forests.",""],
+ solution:"Coniferous forests are found in the Himalayan region of India due to the cold climate at high altitude."},
+
+{q:"Why most of the Sun light does not penetrate to the ground in evergreen forest?",opts:["Because of snowfall","Because of less temperature","Because of trees overlap with each other","Because of less rainfall"],correct:2,
+ wrong:["Snowfall is unrelated to light penetration in evergreen forests.","Temperature doesn't block sunlight.","","Evergreen forests actually get heavy rainfall, not less."],
+ solution:"The dense canopy where trees overlap with each other blocks sunlight from reaching the forest floor."},
+
+{q:"Which state in India has the maximum percentage of its area covered by forests?",opts:["Arunachal Pradesh","Madhya Pradesh","Mizoram","Nagaland"],correct:1,
+ wrong:["Not the state marked correct per the source (highest % forest area differs from this).","","Not the state marked correct per the source.","Not the state marked correct per the source."],
+ solution:"Per the source material, Madhya Pradesh is marked as having the maximum percentage of area covered by forests."},
+
+{q:"Where can we find thorn forest in India?",opts:["Semi-arid regions","Desert regions","Himalayan regions","Northeast"],correct:0,
+ wrong:["","True deserts are too dry even for thorn forest.","Himalayan regions have coniferous/alpine forests, not thorn forest.","Northeast India has rainforest/evergreen forest, not thorn forest."],
+ solution:"Thorn forests are found in semi-arid regions with scattered thorny shrubs and trees."},
+
+{q:"How forests increase the atmosphere's humidity?",opts:["By transpiration","By inspiration","By expiration","By oxidation"],correct:0,
+ wrong:["","'Inspiration' (breathing in) isn't the process that releases moisture.","'Expiration' here isn't the correct plant process term for releasing water vapor to air.","Oxidation is a chemical process, not related to humidity increase."],
+ solution:"Forests increase atmospheric humidity through transpiration — the release of water vapor from plant leaves."},
+
+{q:"Which of the following type of forest important for watersheds?",opts:["Tropical Evergreen forest","Tropical Deciduous forest","Tropical Montana forests","Grassland forest"],correct:2,
+ wrong:["Not specifically marked as the watershed-critical type here.","Not specifically marked as the watershed-critical type here.","","Not a standard forest classification for this purpose."],
+ solution:"Tropical Montane forests are important for watersheds, as they occur at higher elevations feeding rivers and streams."},
+
+{q:"How the tropical rain forest gets the name?",opts:["Due to less rain","Due to heavy rain","Due to moderate rain","Due to no rain required"],correct:1,
+ wrong:["This contradicts the defining feature of rainforests.","","Rainforests are defined by heavy, not moderate, rainfall.","Rainforests require abundant rainfall by definition."],
+ solution:"Tropical rainforests get their name from the heavy rainfall they receive."},
+
+{q:"How many types of aquatic ecosystems are there?",opts:["One","Two","Three","Four"],correct:1,
+ wrong:["Incorrect count.","","Incorrect count.","Incorrect count."],
+ solution:"There are two main types of aquatic ecosystems: Freshwater and Saltwater (marine)."},
+
+{q:"Where plants and animals live in aquatic ecosystems?",opts:["Water","Land","Air","Fire"],correct:0,
+ wrong:["","By definition, aquatic means water-based, not land.","Aquatic organisms live in water, not air.","Fire isn't a habitat medium."],
+ solution:"In aquatic ecosystems, plants and animals live in water."},
+
+{q:"What made organisms to build their ecosystem in aquatic?",opts:["Curiosity","Evolution","Force from other organisms","Increase in water level"],correct:1,
+ wrong:["Curiosity isn't a biological driver of habitat formation.","","Not the primary driver described here.","Water level changes alone don't explain organisms adapting to aquatic life."],
+ solution:"Evolution drove organisms to adapt and build ecosystems in aquatic environments over time."},
+
+{q:"Where can we find both running water as well as stagnant water?",opts:["Marine ecosystems","Wetlands","Coral reefs","Freshwater ecosystems"],correct:3,
+ wrong:["Marine ecosystems are saltwater, not mixed running/stagnant freshwater types.","Wetlands are a specific type, not the general category described.","Coral reefs are marine, not combining running/stagnant freshwater.",""],
+ solution:"Freshwater ecosystems include both running water (rivers/streams — lotic) and stagnant water (ponds/lakes — lentic)."},
+
+{q:"Which is the largest ecosystem on Earth?",opts:["Desert","Forest","Grassland","Oceans"],correct:3,
+ wrong:["Deserts are not the largest ecosystem.","Forests are not the largest ecosystem.","Grasslands are not the largest ecosystem.",""],
+ solution:"Oceans cover more than two-thirds of Earth's surface, making them the largest ecosystem."},
+
+{q:"Which of the following is among the world's most productive ecosystems in terms of biomass production?",opts:["Pond ecosystems","Lake ecosystems","Brackish water ecosystems","River ecosystems"],correct:2,
+ wrong:["Ponds are productive but not marked as the top category here.","Lakes are productive but not marked as the top category here.","","Rivers are productive but not marked as the top category here."],
+ solution:"Brackish water (estuarine) ecosystems are among the world's most productive due to nutrient mixing from fresh and salt water."},
+
+{q:"Which is the simplest aquatic ecosystem?",opts:["Pond","Stream","Lake","Marine"],correct:0,
+ wrong:["","Streams are more complex (flowing, connected systems).","Lakes are larger, more complex systems.","Marine ecosystems are vast and complex."],
+ solution:"A pond is considered the simplest aquatic ecosystem — small, self-contained, and easy to study."},
+
+{q:"Which ecosystem is known as giant permanent pond?",opts:["Lake Ecosystem","Pond ecosystem","Seashore ecosystem","Marine ecosystem"],correct:0,
+ wrong:["","A pond is temporary/seasonal, not the 'giant permanent' version of itself.","Seashore is a coastal transition zone, not a 'giant pond.'","Marine refers to oceans, not freshwater pond-like systems."],
+ solution:"A Lake is often described as a giant permanent pond, since it's a larger, long-lasting freshwater body."},
+
+{q:"How many oceans constitute the marine ecosystems around peninsular India?",opts:["One","Two","Three","Four"],correct:2,
+ wrong:["Incorrect count.","Incorrect count.","","Incorrect count."],
+ solution:"Three water bodies — the Arabian Sea, Bay of Bengal, and Indian Ocean — surround peninsular India."},
+
+{q:"Biodiversity can be broadly classified into how many types?",opts:["2","5","3","4"],correct:2,
+ wrong:["Incorrect count.","Incorrect count.","","Incorrect count."],
+ solution:"Biodiversity is broadly classified into three types: genetic, species, and ecosystem diversity."},
+
+{q:"Biodiversity is of importance as it offers:",opts:["Stability of ecosystems","Stability of atmosphere","Stability of species","Stability of research"],correct:0,
+ wrong:["","Biodiversity's primary role isn't atmospheric stability specifically.","It's broader than just species stability — it's ecosystem-level stability.","Not related to research stability."],
+ solution:"Biodiversity provides stability of ecosystems by maintaining ecological balance and resilience."},
+
+{q:"The loss in biodiversity is not attributed to:",opts:["Explosion in the human population","Transforming earth's surface","Destruction of natural habitats","Use of sustainable products"],correct:3,
+ wrong:["This IS a cause of biodiversity loss.","This IS a cause of biodiversity loss.","This IS a cause of biodiversity loss.",""],
+ solution:"Using sustainable products helps prevent, not cause, biodiversity loss — it's the exception among the options."},
+
+{q:"In how many ways does the conservation of biodiversity work?",opts:["5","2","3","4"],correct:1,
+ wrong:["Incorrect count.","","Incorrect count.","Incorrect count."],
+ solution:"Biodiversity conservation works in two ways: in-situ and ex-situ conservation."},
+
+{q:"Which one of the following is not an in-situ conservation method?",opts:["Zoo","National Parks","Biosphere Reserves","Sanctuaries"],correct:0,
+ wrong:["","National Parks ARE in-situ conservation.","Biosphere Reserves ARE in-situ conservation.","Sanctuaries ARE in-situ conservation."],
+ solution:"A Zoo is an ex-situ (outside natural habitat) conservation method, unlike National Parks, Biosphere Reserves, and Sanctuaries."},
+
+{q:"Which is an advantage of ex-situ conservation?",opts:["Cheap method","Conserve large number of species together","Genetic process for breeding/long life","Existence in natural habitat"],correct:2,
+ wrong:["Ex-situ methods (zoos, gene banks) are typically expensive, not cheap.","Ex-situ facilities usually hold limited numbers, not large numbers together.","","Ex-situ conservation happens OUTSIDE natural habitat — this describes in-situ instead."],
+ solution:"Ex-situ conservation enables controlled breeding programs that support genetic diversity and extend species survival."},
+
+{q:"Hot spot areas have:",opts:["Low density of biodiversity","Only endangered plants","High density of hot springs","High density of biodiversity"],correct:3,
+ wrong:["Opposite of what defines a hotspot.","Hotspots include many species, not only endangered plants.","'Hot springs' is unrelated wordplay — has nothing to do with geothermal springs.",""],
+ solution:"Biodiversity hotspots have a high density of species, especially endemic ones, and are under significant threat."},
+
+{q:"What is the cause of discoloration in fresh water?",opts:["Fungal bloom","Viral bloom","An algae bloom","Bacterial bloom"],correct:2,
+ wrong:["Fungal blooms aren't the typical cause of water discoloration.","Viruses don't cause visible water discoloration.","","Bacterial blooms are less commonly the primary visible discoloration cause compared to algae."],
+ solution:"An algae bloom (excessive algae growth) is the common cause of discoloration in freshwater bodies."},
+
+{q:"The Great Smog in 1952 caused in which city?",opts:["Delhi","Lahore","London","New York"],correct:2,
+ wrong:["Incorrect city.","Incorrect city.","","Incorrect city."],
+ solution:"The Great Smog of 1952 occurred in London, caused by coal pollution combined with weather conditions."},
+
+{q:"In which forest we can see deforestation to large extent?",opts:["Atlantic forest","Amazon forest","Borneo forest","Sumatra forest"],correct:1,
+ wrong:["Not the forest marked as having the largest extent of deforestation here.","","Significant deforestation occurs here too but Amazon is marked as the answer.","Significant deforestation occurs here too but Amazon is marked as the answer."],
+ solution:"The Amazon forest experiences deforestation on a massive scale, largely due to agriculture and logging."},
+
+{q:"The biggest driver of deforestation is:",opts:["Agriculture","Forest fire","Volcanic activities","Soil erosion"],correct:0,
+ wrong:["","Forest fires contribute but aren't the single biggest global driver.","Volcanic activity is rare and localized, not a major global driver.","Soil erosion is often a consequence of deforestation, not its cause."],
+ solution:"Agriculture (clearing land for crops/livestock) is the single biggest driver of deforestation worldwide."},
+
+{q:"The best way to reduce deforestation is by:",opts:["Using more paper","Clear more area of trees to grow plant","Burning forest in order to create cultivated land","Clear more area of plants to grow trees"],correct:3,
+ wrong:["Using more paper increases demand for wood, worsening deforestation.","This directly causes deforestation rather than reducing it.","Burning forest destroys it, worsening deforestation.",""],
+ solution:"Clearing more area specifically to plant trees (reforestation/afforestation) helps reduce the net effects of deforestation."},
+
+{q:"Due to deforestation how much fields worth of trees is lost per minute?",opts:["12 football","24 football","36 football","48 football"],correct:2,
+ wrong:["Incorrect figure per the source.","Incorrect figure per the source.","","Incorrect figure per the source."],
+ solution:"Per the source material, about 36 football fields' worth of trees are lost every minute due to deforestation."},
+
+{q:"Rain forest land is most often cleared for:",opts:["Pasture","Forest fire","Human activities","High pressure"],correct:2,
+ wrong:["Pasture is one use within broader human activity, but 'human activities' is the marked answer.","Forest fire is a consequence, not the reason for intentional clearing.","","'High pressure' isn't a land-use clearing reason."],
+ solution:"Rainforest land is most often cleared for various human activities (agriculture, settlement, logging)."},
+
+{q:"The main cause of wildfire is:",opts:["Volcanic activity","Lightening","Pollution","Human activity"],correct:3,
+ wrong:["Volcanic activity is a rare natural cause, not the main one.","Lightning causes some wildfires but isn't marked as the main cause here.","Pollution doesn't directly ignite wildfires.",""],
+ solution:"Human activity is the main cause of wildfires globally (campfires, discarded cigarettes, arson, etc.)."},
+
+{q:"Which nation is most affected by deforestation?",opts:["Honduras","Indonesia","Benin","Ghana"],correct:0,
+ wrong:["","Indonesia faces major deforestation too, but Honduras is marked as the answer here.","Benin faces deforestation but isn't marked as most affected here.","Ghana faces deforestation but isn't marked as most affected here."],
+ solution:"Per the source material, Honduras is marked as the nation most affected by deforestation (among the listed options)."},
+
+{q:"Which type of farming cause more amount of deforestation?",opts:["Subsistence farming","Commercial farming","Mixed farming","Dairy farming"],correct:0,
+ wrong:["","Commercial farming contributes too, but subsistence farming is marked as the answer.","Mixed farming isn't marked as the primary driver here.","Dairy farming isn't marked as the primary driver here."],
+ solution:"Per the source material, subsistence farming is marked as causing the greater amount of deforestation (among the listed options)."}
+];
+
+const container = document.getElementById('quiz-container');
+const state = QUESTIONS.map(()=>({picked:null}));
+const TOTAL = QUESTIONS.length;
+
+function render(){
+  container.innerHTML = '';
+  QUESTIONS.forEach((item,qi)=>{
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'card-'+qi;
+
+    const num = document.createElement('div');
+    num.className='q-num';
+    num.textContent = 'QUESTION '+(qi+1)+' OF '+TOTAL;
+    card.appendChild(num);
+
+    const qt = document.createElement('div');
+    qt.className='q-text';
+    qt.textContent = (qi+1)+'. '+item.q;
+    card.appendChild(qt);
+
+    const optsWrap = document.createElement('div');
+    optsWrap.className='options';
+    item.opts.forEach((optText,oi)=>{
+      const label = document.createElement('label');
+      label.className='opt';
+      label.id = 'opt-'+qi+'-'+oi;
+      const input = document.createElement('input');
+      input.type='radio';
+      input.name='q'+qi;
+      input.value=oi;
+      input.addEventListener('change',()=>{ answerQuestion(qi,oi); });
+      const span = document.createElement('span');
+      span.textContent = String.fromCharCode(97+oi) + ') ' + optText;
+      label.appendChild(input);
+      label.appendChild(span);
+      optsWrap.appendChild(label);
+    });
+    card.appendChild(optsWrap);
+
+    const fb = document.createElement('div');
+    fb.className='feedback';
+    fb.id='fb-'+qi;
+    card.appendChild(fb);
+
+    container.appendChild(card);
+  });
+  updateCounts();
+}
+
+// INSTANT grading the moment an option is picked
+function answerQuestion(qi,oi){
+  if(state[qi].picked!==null) return; // already answered, lock it
+  state[qi].picked = oi;
+  const item = QUESTIONS[qi];
+  const card = document.getElementById('card-'+qi);
+  const fb = document.getElementById('fb-'+qi);
+
+  card.querySelectorAll('input').forEach(r=>r.disabled=true);
+  card.querySelectorAll('.opt').forEach(o=>o.classList.add('disabled'));
+  document.getElementById('opt-'+qi+'-'+item.correct).classList.add('opt-correct');
+
+  if(oi===item.correct){
+    card.classList.add('correct');
+    fb.className='feedback good show';
+    fb.innerHTML = '<span class="label">✓ Correct (+1)</span><div class="why">'+item.solution+'</div>';
+  } else {
+    card.classList.add('incorrect');
+    document.getElementById('opt-'+qi+'-'+oi).classList.add('opt-wrong-picked');
+    fb.className='feedback bad show';
+    const whyWrong = item.wrong[oi] || "This option does not correctly match the concept being tested.";
+    fb.innerHTML = '<span class="label">✗ Incorrect (−0.25)</span>'+
+      '<div><b>Why your answer is wrong:</b> '+whyWrong+'</div>'+
+      '<div class="why"><b>Solution:</b> '+item.solution+'</div>';
+  }
+  updateCounts();
+}
+
+function updateCounts(){
+  let answered=0, correct=0, wrong=0;
+  state.forEach(s=>{
+    if(s.picked!==null) answered++;
+  });
+  QUESTIONS.forEach((item,qi)=>{
+    if(state[qi].picked===null) return;
+    if(state[qi].picked===item.correct) correct++; else wrong++;
+  });
+  const score = correct - (wrong*0.25);
+  document.getElementById('answered-count').textContent = answered;
+  document.getElementById('correct-count').textContent = correct;
+  document.getElementById('wrong-count').textContent = wrong;
+  document.getElementById('live-score').textContent = score.toFixed(2);
+  return {answered,correct,wrong,score};
+}
+
+function finishQuiz(){
+  const {answered,correct,wrong,score} = updateCounts();
+  const unanswered = TOTAL-answered;
+  const panel = document.getElementById('result-panel');
+  panel.classList.add('show');
+  document.getElementById('final-score').textContent = score.toFixed(2) + ' / ' + TOTAL;
+  const pct = (correct/TOTAL)*100;
+  let grade;
+  if(pct>=90) grade='Excellent! 🌟';
+  else if(pct>=75) grade='Great job! 👍';
+  else if(pct>=50) grade='Good effort — review the explanations.';
+  else grade='Keep practicing — re-read the solutions above.';
+  document.getElementById('final-grade').textContent =
+    correct+' correct, '+wrong+' wrong, '+unanswered+' unanswered out of '+TOTAL+'. '+grade;
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('submit-btn').style.display='none';
+  document.getElementById('retry-btn').style.display='inline-block';
+  panel.scrollIntoView({behavior:'smooth'});
+}
+
+document.getElementById('submit-btn').addEventListener('click', finishQuiz);
+document.getElementById('retry-btn').addEventListener('click', ()=>{
+  state.forEach(s=>{s.picked=null;});
+  document.getElementById('result-panel').classList.remove('show');
+  document.getElementById('submit-btn').style.display='inline-block';
+  document.getElementById('retry-btn').style.display='none';
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+render();
+</script>
+</body>
+</html>
